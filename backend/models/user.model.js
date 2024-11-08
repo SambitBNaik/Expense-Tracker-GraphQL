@@ -23,7 +23,7 @@ const userSchema= new mongoose.Schema({
         enum:["male","female"],
     },
 
-},{timestamps});
+},{timestamps:true});
 
 const User= mongoose.model("User",userSchema);
 
