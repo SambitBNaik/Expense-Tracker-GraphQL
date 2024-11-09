@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import InputField from '../components/InputField'
 import RadioButtton from '../components/RadioButtton'
 import{Link} from 'react-router-dom';
+import { useMutation } from '@apollo/client';
+import { SIGN_UP } from '../graphql/mutations/user.mutation';
+import toast from 'react-hot-toast';
 
 const SignUpPage = () => {
   const [signUpData, setSignUpData]=useState({
@@ -9,6 +12,10 @@ const SignUpPage = () => {
     username:"",
     password:"",
     gender:"",
+  });
+
+  const [singup,{loading,}]=useMutation(SIGN_UP,{
+     refetchQueries:["GetAuthenticatedUser"],
   });
 
   const handleChange=(e)=>{
@@ -27,9 +34,19 @@ const SignUpPage = () => {
     }
   };
 
-  const handleSubmit=(e)=>{
+  const handleSubmit= async(e)=>{
     e.preventDefault();
-    console.log(signUpData);
+    try{
+      await singup({
+        variables:{
+          input:signUpData
+        },
+      });
+    }catch(error){
+      console.error("Error",error);
+      toast.error(error.message);
+    }
+    
   }
   return (
     <div className='h-screen flex justify-center items-center'>
@@ -59,6 +76,7 @@ const SignUpPage = () => {
                   label='Password'
                   id='password'
                   name='password'
+                  type='password'
                   value={signUpData.password}
                   onChange={handleChange} 
                 />
@@ -83,9 +101,13 @@ const SignUpPage = () => {
               <div>
                 <button
                    type='submit'
-                   className='w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
+                   className='w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 
+                   focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 
+                   focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 
+                   disabled:cursor-not-allowed'
+                   disabled={loading}
                    >
-                  Sign Up
+                  {loading ? "Loading...." : "Sign Up"}
                 </button>
               </div>
             </form>
