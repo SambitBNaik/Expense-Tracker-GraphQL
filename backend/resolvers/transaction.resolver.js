@@ -29,7 +29,7 @@ const transactionResolver={
             try{
                 const newTransaction= new Transaction({
                     ...input,
-                    userId: context.getUser(),_id,
+                    userId: context.getUser()._id,
                 });
 
                 await newTransaction.save();

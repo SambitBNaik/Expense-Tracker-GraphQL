@@ -1,6 +1,14 @@
+import { useMutation } from '@apollo/client';
 import React from 'react'
+import { CREATE_TRANSACTION } from '../graphql/mutations/transaction.mutation';
+import toast from 'react-hot-toast';
 
 const TransactionForm = () => {
+
+    const [createTransaction, {loading}]=useMutation(CREATE_TRANSACTION,{
+        refetchQueries:["GetTransaction"]
+    })
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -14,6 +22,17 @@ const TransactionForm = () => {
             location: formData.get('location'),
             date: formData.get('date'),
         };
+
+        try{
+            await createTransaction({
+                variables:{input : transactionData}
+            });
+            form.reset();
+            toast.success("Transaction created successfully");
+        }catch(error){
+            toast.error(error.message);
+            console.error("Error in Transaction Form",error.message);
+        }
 
         console.log('transactionData', transactionData);
     }
@@ -147,8 +166,9 @@ const TransactionForm = () => {
             from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600
             disabled:opacity-70 disabled:cursor-not-allowed'
                 type='submit'
+                disabled={loading}
             >
-                Add Transaction
+                {loading ? "Loading...." : "Add Transaction"}
             </button>
         </form>
     )
