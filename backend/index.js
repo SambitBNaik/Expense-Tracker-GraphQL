@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 
 import passport from "passport";
 import session from "express-session";
@@ -22,6 +23,7 @@ import { configurePassport } from './passport/passport.config.js';
 dotenv.config();
 configurePassport();
 
+const __dirname=path.resolve();
 const app= express();
 const httpServer = http.createServer(app);
 
@@ -71,9 +73,14 @@ app.use(
   })
 )
 
+// npm run build will build the frontend and it is the optimised version of the application
+app.use(express.static(path.join(__dirname,"frontend/dist")));
+
+app.get("*", (req,res)=>{
+  res.sendFile(path.join(__dirname,"frontend/dist","index.html"));
+})
 //Modified server startup
 await new Promise((resolve)=> httpServer.listen({port: 4000}, resolve));
-
 await connectDB();
 
 console.log(`🚀 Server ready at http://localhost:4000/graphql`);

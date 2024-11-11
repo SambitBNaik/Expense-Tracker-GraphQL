@@ -22,9 +22,11 @@ const categoryColorMap={
 const Card = ({transaction}) => {
     const {data}=useQuery(GET_AUTHENTICATED_USER);
     let {category, amount, date, paymentType, description, location}=transaction;
+
     const cardClass= categoryColorMap[category];
+
     const[deleteTransaction,{loading}]=useMutation(DELETE_TRANSACTION,{
-        refetchQueries:["GetTransaction","GetTransactionStatistics"],
+        refetchQueries:["GetTransactions","GetTransactionStatistics","GetTransaction"],
     })
     description= description[0]?.toUpperCase()+ description.slice(1);
     category= category[0]?.toUpperCase()+ category.slice(1);
